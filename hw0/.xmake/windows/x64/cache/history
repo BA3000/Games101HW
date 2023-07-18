@@ -1,0 +1,19 @@
+{
+    cmdlines = {
+        "xmake ",
+        "xmake ",
+        "xmake ",
+        "xmake g --proxy=https://127.0.0.1:7890",
+        "xmake ",
+        "xmake ",
+        "xmake ",
+        "xmake g --proxy_hosts=github.com,gitlab.*,*.xmake.io",
+        "xmake ",
+        "xmake ",
+        "xmake g --proxy=http://127.0.0.1:7890",
+        "xmake ",
+        "xmake ",
+        [[xmake lua C:\Users\xiahe\xmake\actions\build\cleaner.lua]],
+        "xmake run"
+    }
+}
