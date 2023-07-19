@@ -19,16 +19,22 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
     return view;
 }
 
+float Deg2Rad(float degree) {
+    return degree * MY_PI / 180.0f;
+}
+
 Eigen::Matrix4f get_model_matrix(float rotation_angle)
 {
     Eigen::Matrix4f model;
 
-    // TODO: Implement this function
+    // Implement this function
     // Create the model matrix for rotating the triangle around the Z axis.
     // Then return it.
-    model << cos(rotation_angle), -sin(rotation_angle), 0, 0, sin(rotation_angle), cos(rotation_angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
-
-    // std::cout << model(0, 0) << std::endl;
+    double rad = Deg2Rad(rotation_angle);
+    model << cos(rad), -sin(rad), 0, 0,
+            sin(rad), cos(rad), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1;
 
     return model;
 }
@@ -40,10 +46,13 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
 
     Eigen::Matrix4f projection;
 
-    // TODO: Implement this function
+    // Implement this function
     // Create the projection matrix for the given parameters.
     // Then return it.
-    projection << 1.0f / atan(eye_fov / 2), 0, 0, 0, 0, 1.0f / tan(eye_fov / 2), 0, 0, 0, 0, (-zNear - zFar) / (zNear - zFar), (2 * zFar * zNear) / (zNear - zFar), 0, 0, 1, 0;
+    projection << 1.0f / atan(Deg2Rad(eye_fov)/2), 0, 0, 0,
+                0, 1.0f / tan(Deg2Rad(eye_fov)/2), 0, 0,
+                0, 0, (-zNear - zFar) / (zNear - zFar), (2 * zFar * zNear) / (zNear - zFar),
+                0, 0, 1, 0;
 
     return projection;
 }
