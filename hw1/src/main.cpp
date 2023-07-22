@@ -6,6 +6,10 @@
 
 constexpr double MY_PI = 3.1415926;
 
+inline double Deg2Rad(double degree) {
+    return degree * MY_PI / 180.0f;
+}
+
 Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
 {
     Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
@@ -17,10 +21,6 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
     view = translate * view;
 
     return view;
-}
-
-float Deg2Rad(float degree) {
-    return degree * MY_PI / 180.0f;
 }
 
 Eigen::Matrix4f get_model_matrix(float rotation_angle)
@@ -44,17 +44,27 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
 {
     // Students will implement this function
 
-    Eigen::Matrix4f projection;
+    Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f persp, ortho;
+    auto fov_rad = Deg2Rad(eye_fov);
+    auto half_fov_rad = Deg2Rad(eye_fov / 2.0f);
+    auto n = zNear, f = zFar;
+    // perspective matrix
+    persp << n, 0, 0, 0,
+            0, n, 0, 0,
+            0, 0, n + f, -n * f,
+            0, 0, 1, 0;
 
-    // Implement this function
-    // Create the projection matrix for the given parameters.
-    // Then return it.
-    projection << 1.0f / atan(Deg2Rad(eye_fov)/2), 0, 0, 0,
-                0, 1.0f / tan(Deg2Rad(eye_fov)/2), 0, 0,
-                0, 0, (-zNear - zFar) / (zNear - zFar), (2 * zFar * zNear) / (zNear - zFar),
-                0, 0, 1, 0;
+    double w, h, z;
+    h = - zNear * tan(half_fov_rad) * 2;
+    w = h * aspect_ratio;
+    z = zFar - zNear;
+    ortho << 2 / w, 0, 0, 0,
+            0, 2 / h, 0, 0,
+            0, 0, 2 / z, -(zFar + zNear) / 2,
+            0, 0, 0, 1;
 
-    return projection;
+    return ortho * persp;
 }
 
 // rotate around arbitrary axis
