@@ -33,3 +33,6 @@
 
 # ignore xmake cache
 .xmake/*
+
+# ignore build folder
+build/*
