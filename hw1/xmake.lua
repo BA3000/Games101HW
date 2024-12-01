@@ -1,5 +1,5 @@
 add_rules("mode.debug", "mode.release")
-add_requires("opencv", "eigen", {proxy=true})
+add_requires("opencv", "eigen")
 set_languages("cxx17")
 
 target("hw1")

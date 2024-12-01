@@ -70,9 +70,23 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
 
 // rotate around arbitrary axis
 Eigen::Matrix4f get_rotation(Vector3f axis, float angle) {
-    // TODO: implement this
-    auto rot = Eigen::Matrix4f::Identity();
-    return rot;
+    // implemented this
+    Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
+    float norm = axis.norm();
+    axis /= norm;
+    auto angle_rad = angle / 180.0f * MY_PI;
+    Eigen::Matrix3f N(3,3);
+    N << 0, -axis[2], axis[1],
+        axis[2], 0, -axis[0],
+        -axis[1],axis[0],0;
+
+    Eigen::Matrix3f m3_rotate = std::cos(angle_rad) * Eigen::Matrix3f::Identity() +
+                            (1 - std::cos(angle_rad)) * axis * axis.transpose() +
+                            std::sin(angle_rad) * N;
+    Eigen::Matrix4f m4_rotate = Eigen::Matrix4f::Identity();
+    m4_rotate.block(0,0,3,3) = m3_rotate;
+    model = m4_rotate * model;
+    return model;
 }
 
 int main(int argc, const char** argv)
@@ -99,6 +113,8 @@ int main(int argc, const char** argv)
 
     std::vector<Eigen::Vector3i> ind{{0, 1, 2}};
 
+    Eigen::Vector3f rotate_axis{1, 0, 0};
+
     auto pos_id = r.load_positions(pos);
     auto ind_id = r.load_indices(ind);
 
@@ -108,7 +124,10 @@ int main(int argc, const char** argv)
     if (command_line) {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
-        r.set_model(get_model_matrix(angle));
+        // rotates around z axis
+        // r.set_model(get_model_matrix(angle));
+        // rotates around specified axis
+        r.set_model(get_rotation(rotate_axis, angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
 
@@ -124,7 +143,10 @@ int main(int argc, const char** argv)
     while (key != 27) {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
+        // rotates around z axis
         r.set_model(get_model_matrix(angle));
+        // rotates around specified axis
+        r.set_model(get_rotation(rotate_axis, angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
 
@@ -139,6 +161,7 @@ int main(int argc, const char** argv)
 
         if (key == 'a') {
             angle += 10;
+            std::cout<<"cur angle: " << angle << std::endl;
         }
         else if (key == 'd') {
             angle -= 10;
