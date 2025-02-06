@@ -33,3 +33,7 @@
 
 # ignore vscode config
 .vscode/*
+
+# xmake
+.xmake/*
+build/*
